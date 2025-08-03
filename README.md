@@ -83,4 +83,4 @@ Hope you enjoy the new and improved StudyTracker. Thankyou!
 ---
 
 # 🏷️
-ime-tracker, study-timer, productivity-tool, python, focus-timer, cross-platform, hotkey-automation, statistics, streaks, heatmap, minimalist, distraction-free, system-tray-app, gui, study-time-tracker
+Time-tracker, study-timer, productivity-tool, python, focus-timer, cross-platform, hotkey-automation, statistics, streaks, heatmap, minimalist, distraction-free, system-tray-app, gui, study-time-tracker
