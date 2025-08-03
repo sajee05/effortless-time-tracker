@@ -1,5 +1,8 @@
 # StudyTracker -Py
 
+<img width="1170" height="654" alt="image" src="https://github.com/user-attachments/assets/fe66ee87-c447-4862-9c7c-d1db8b7e5c4c" />
+
+
 ## The problem
 
 Most study-timer utilities require too many clicks, stay in the way and still do not provide useful statistics. When you are concentrating you should be able to start or stop a session instantly, keep the desktop clean and review your progress only when you want to.
