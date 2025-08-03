@@ -59,3 +59,23 @@ The autostart step varies by desktop environment (login items, `.desktop` file
 Check out my blog: https://thekingofweirdtimes.blogspot.com/
 
 Enjoy tracking!
+
+---
+
+## Changelog:
+
+### 03-AUG-25
+**✨ Major New Features**
+- Complete UI Overhaul: The app has been redesigned from the ground up with a modern, professional look inspired by Apple's design philosophy. It's now a sleek, frameless window that you can drag around your screen.
+- Advanced Visual Stats: The "Stats" page now features two powerful visualizations:
+- A GitHub-style Heatmap to show your study consistency over the entire year.
+- An interactive Bar Chart to compare your study hours weekly or monthly. You can even click on a week in the monthly view to drill down into the details!
+- Recent Logs Manager: A new "Recent Logs" tab shows your last 25 study sessions. You can now easily select any log to edit the time or delete it completely.
+- Zoom & Accessibility: The entire interface now supports zooming! Use Ctrl + Mouse Wheel or Ctrl +/- to make everything bigger or smaller, perfect for any screen resolution.
+
+✅ **Key Improvements**
+- Clearer Stats: The numerical stats table is back and better than ever, with clearer labels for "Today," "This Week," and "This Month" to make your progress easy to understand at a glance.
+- Richer Tooltip: Hovering over the tray icon now gives you a more detailed summary, including your current streak, today's total time, and this week's total time.
+- Production Ready: The code has been polished and reviewed for bugs to ensure a smooth, stable experience.
+
+Hope you enjoy the new and improved StudyTracker. Thankyou!
