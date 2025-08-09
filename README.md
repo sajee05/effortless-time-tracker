@@ -1,124 +1,92 @@
-# StudyTracker -Py
+# StudyTracker
 
-<img width="1170" height="654" alt="image" src="https://github.com/user-attachments/assets/fe66ee87-c447-4862-9c7c-d1db8b7e5c4c" />
+<img width="1365" height="753" alt="image" src="https://github.com/user-attachments/assets/e427dd63-6f32-4030-a9f9-315b4092c1dd" />
 
-## The problem
+(Swipe down for more screenshots) A minimalist study timer that stays out of your way while tracking everything that matters. 
 
-Most study-timer utilities require too many clicks, stay in the way and still do not provide useful statistics. When you are concentrating you should be able to start or stop a session instantly, keep the desktop clean and review your progress only when you want to.
+## Why StudyTracker?
 
-## The solution
+Most study timers are distracting. They need too many clicks, clutter your screen, and still miss important features. StudyTracker is different - simple/ no extra efforts of manually turning on the timer/ if you're a streamer- no extra effort of going to OBS and starting/stopping the timer each time.
 
-StudyTracker is a tiny **Python tray-app** that
+## Features
 
-- starts / stops with one global shortcut (`Alt + Shift + 1`)
-- lives in the system tray – one left-click opens its Settings panel
-- keeps every session in a lightweight SQLite file  
-  (so nothing is lost between reboots)
-- shows detailed per-day, per-week and per-month numbers
-- Maintains your streak information
-- lets you manually correct logs and import / export them as JSON
-- plays a short sound on start / stop which you can replace freely
+### Core
+- **One-key control** - Start/stop with `Alt + Shift + 1` from anywhere
+- **System tray app** - Runs quietly in the background, click to open dashboard
+- **Auto-saves everything** - SQLite database preserves all sessions between reboots
+- **Sound feedback** - Subtle audio cues when starting/stopping (customizable)
 
-## Quick start (Windows)
+### Analytics
+- **Comprehensive stats** - Daily, weekly, monthly breakdowns with averages
+- **GitHub-style heatmap** - Visualize your consistency across the year
+- **Interactive charts** - Weekly/monthly bar charts with drill-down capability
+- **Streak tracking** - Current and longest streaks to keep you motivated
 
-1. Install the requirements  
-   `pip install pystray pillow keyboard playsound tkcalendar`
+### Rewards System
+- **Earn coins** - 1 hour of study = 1 coin
+- **Custom rewards** - Set your own rewards at 50, 100, 200 coins or 14-day streak
+- **Progress tracking** - Visual progress bars show how close you are to each reward
 
-2. Place `tracker.py` in a folder anywhere (I prefer you put it in the documents folder) and run it with `python tracker.py` 
-   
-   - A tray icon appears near the clock – that means the tracker is running.
+### Stream Integration
+- **OBS overlay** - Real-time HTML display for streamers
+- **Live updates** - Shows current session, today's total, and streak
+- **Clean design** - Minimal, professional overlay that fits any stream aesthetic
 
-3. Press **Alt + Shift + 1** to start timing, press it again to stop. A sound confirms both actions.
+### Quality of Life
+- **Manual adjustments** - Add/remove time for any date
+- **Log management** - Edit or delete individual sessions
+- **Import/Export** - JSON backup and restore
+- **Fullscreen mode** - F11 for distraction-free viewing
+- **Zoom support** - Ctrl + scroll to adjust interface size
+- **Dark theme** - Easy on the eyes during long study sessions
 
-4. Tray icon:
-   
-   1. Hovering on the icon shows current time.
-   
-   2. Left-click the tray icon to open Settings:
-      
-      - view statistics
-      - export / import logs (JSON)
-      - add or deduct minutes manually
-      - change the two MP3 files
-      - read a short instruction page
-   
-   3. Right click -> Exit -to Close the timer.
+## Installation
 
-5. Want StudyTracker on every boot (WINDOWS)?  
-   Press **Win + R**, type `shell:startup`, press Enter and drop a shortcut to `main_tracker.py` (or its compiled `.exe`) in that folder.
+### Requirements
+```bash
+pip install pystray pillow keyboard playsound tkcalendar matplotlib
+```
 
-## macOS / Linux
+### Quick Start
+1. Download `tracker.py` to any folder
+2. Run with `python tracker.py`
+3. Press `Alt + Shift + 1` to start timing
+4. Left-click the tray icon (📖) to view your dashboard
 
-The script works as long as  
-`python3`, `pip`, `tk`, `pystray`, `keyboard` (requires sudo on Linux for global hot-keys) and `playsound` are available.  
-Replace step 1 with `pip3 …` and launch with `python3 main_tracker.py`.
+### Auto-start on Windows
+1. Press `Win + R`
+2. Type `shell:startup` and press Enter
+3. Drop a shortcut to `tracker.py` in that folder
 
-The autostart step varies by desktop environment (login items, `.desktop` files, etc.) but the rest behaves the same.
+### macOS/Linux
+Use `pip3` and `python3` instead. For Linux, you'll need sudo for global hotkeys. Auto-start varies by desktop environment.
+
+## OBS Setup
+
+1. Run the script and copy the `obs_display.html` path from the console
+2. In OBS, add a new Browser Source
+3. Check "Local file" and paste the path
+4. Set dimensions to 300x300
+5. Position wherever you like
+
+## Usage Tips
+
+- **Tray icon** - Red dot appears when timer is active
+- **Hover tooltip** - Shows current session time and stats
+- **Right-click** - Quick access to exit
+- **Rewards** - Click the pencil icon to set custom rewards for yourself
 
 Check out my blog: https://thekingofweirdtimes.blogspot.com/
 
-Enjoy tracking!
-
 ---
 
-## Changelog:
+# Screenshots
 
-### 09-AUG-25
+<img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/8560bc07-0a83-4048-b619-f2de5d76c38a" />
+<img width="419" height="172" alt="image" src="https://github.com/user-attachments/assets/97c77a9b-db3f-4bc4-a5a5-14ecf5c1021c" />
+<img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/446ccc12-3f98-4960-aba9-3a3c5c10d3fe" />
+<img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/8ef4572e-c4a9-4c47-89ee-63cf52c61710" />
+<img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/7bcb6e64-beb8-4874-b849-8396a35bbb37" />
 
-- **🔴 Live OBS Overlay:** You can now show your timer stats directly on your stream! The script creates a sleek, minimal `obs_display.html` file that updates in real-time. Just add it as a Browser Source in OBS for a clean, professional look.
-
-- **Visual Timer Indicator:** The book icon (📖) in your system tray now gets a little red dot when the timer is active. It's a small but handy way to know you're on the clock with just a glance.
-
-###### How to Add the Overlay to OBS:
-
-1. **Run the script.** When you start it, look at the console/terminal. It will print the full file path for `obs_display.html`. **Copy this path.**
-
-2. Open **OBS Studio**.
-
-3. Go to the scene you want to add the timer to. In the **"Sources"** box, click the **`+`** button and choose **"Browser"**.
-
-4. Give it a name like "Study Timer" and click **"OK"**.
-
-5. In the properties window that pops up:
-   
-   - Check the box that says **"Local file"**.
-   
-   - Paste the file path you copied into the **"Local File"** field.
-   
-   - Set the **Width** to `300` and **Height** to `300`.
-
-6. Click **"OK"**.
-
-That's it! The timer should now appear in your OBS preview. You can click and drag to move it and resize it however you like.
-
-### 03-AUG-25
-
-**✨ Major New Features**
-
-- Advanced Visual Stats: The "Stats" page now features two powerful visualizations:
-- A GitHub-style Heatmap to show your study consistency over the entire year.
-- An interactive Bar Chart to compare your study hours weekly or monthly. You can even click on a week in the monthly view to drill down into the details!
-- Recent Logs Manager: A new "Recent Logs" tab shows your last 25 study sessions. You can now easily select any log to edit the time or delete it completely.
-- Zoom & Accessibility: The entire interface now supports zooming! Use Ctrl + Mouse Wheel or Ctrl +/- to make everything bigger or smaller, perfect for any screen resolution.
-
- **Key Improvements**
-
-- Clearer Stats: The numerical stats table is back and better than ever, with clearer labels for "Today," "This Week," and "This Month" to make your progress easy to understand at a glance.
-- Richer Tooltip: Hovering over the tray icon now gives you a more detailed summary, including your current streak, today's total time, and this week's total time.
-- Production Ready: The code has been polished and reviewed for bugs to ensure a smooth, stable experience.
-
-<<<<<<< HEAD
-
-
-Hope you enjoy the new and improved StudyTracker. Thankyou! 
-=======
-Hope you enjoy the new and improved StudyTracker. Thankyou!
-
----
-
-# 🏷️
+## Tags
 Time-tracker, study-timer, productivity-tool, python, focus-timer, cross-platform, hotkey-automation, statistics, streaks, heatmap, minimalist, distraction-free, system-tray-app, gui, study-time-tracker
-<<<<<<< Updated upstream
-=======
->>>>>>> 227b3c44d5fcbf30a0628cad9b9d45f17084f547
->>>>>>> Stashed changes
