@@ -2,7 +2,7 @@
 
 <img width="1365" height="753" alt="image" src="https://github.com/user-attachments/assets/e427dd63-6f32-4030-a9f9-315b4092c1dd" />
 
-A minimalist study timer that stays out of your way while tracking everything that matters.
+(Swipe down for more screenshots) A minimalist study timer that stays out of your way while tracking everything that matters. 
 
 ## Why StudyTracker?
 
@@ -83,6 +83,7 @@ Check out my blog: https://thekingofweirdtimes.blogspot.com/
 # Screenshots
 
 <img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/8560bc07-0a83-4048-b619-f2de5d76c38a" />
+<img width="419" height="172" alt="image" src="https://github.com/user-attachments/assets/97c77a9b-db3f-4bc4-a5a5-14ecf5c1021c" />
 <img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/446ccc12-3f98-4960-aba9-3a3c5c10d3fe" />
 <img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/8ef4572e-c4a9-4c47-89ee-63cf52c61710" />
 <img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/7bcb6e64-beb8-4874-b849-8396a35bbb37" />
