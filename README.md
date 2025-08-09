@@ -2,7 +2,6 @@
 
 <img width="1170" height="654" alt="image" src="https://github.com/user-attachments/assets/fe66ee87-c447-4862-9c7c-d1db8b7e5c4c" />
 
-
 ## The problem
 
 Most study-timer utilities require too many clicks, stay in the way and still do not provide useful statistics. When you are concentrating you should be able to start or stop a session instantly, keep the desktop clean and review your progress only when you want to.
@@ -64,23 +63,62 @@ Enjoy tracking!
 
 ## Changelog:
 
+### 09-AUG-25
+
+- **🔴 Live OBS Overlay:** You can now show your timer stats directly on your stream! The script creates a sleek, minimal `obs_display.html` file that updates in real-time. Just add it as a Browser Source in OBS for a clean, professional look.
+
+- **Visual Timer Indicator:** The book icon (📖) in your system tray now gets a little red dot when the timer is active. It's a small but handy way to know you're on the clock with just a glance.
+
+###### How to Add the Overlay to OBS:
+
+1. **Run the script.** When you start it, look at the console/terminal. It will print the full file path for `obs_display.html`. **Copy this path.**
+
+2. Open **OBS Studio**.
+
+3. Go to the scene you want to add the timer to. In the **"Sources"** box, click the **`+`** button and choose **"Browser"**.
+
+4. Give it a name like "Study Timer" and click **"OK"**.
+
+5. In the properties window that pops up:
+   
+   - Check the box that says **"Local file"**.
+   
+   - Paste the file path you copied into the **"Local File"** field.
+   
+   - Set the **Width** to `300` and **Height** to `300`.
+
+6. Click **"OK"**.
+
+That's it! The timer should now appear in your OBS preview. You can click and drag to move it and resize it however you like.
+
 ### 03-AUG-25
+
 **✨ Major New Features**
-- Complete UI Overhaul: The app has been redesigned from the ground up with a modern, professional look inspired by Apple's design philosophy. It's now a sleek, frameless window that you can drag around your screen.
+
 - Advanced Visual Stats: The "Stats" page now features two powerful visualizations:
 - A GitHub-style Heatmap to show your study consistency over the entire year.
 - An interactive Bar Chart to compare your study hours weekly or monthly. You can even click on a week in the monthly view to drill down into the details!
 - Recent Logs Manager: A new "Recent Logs" tab shows your last 25 study sessions. You can now easily select any log to edit the time or delete it completely.
 - Zoom & Accessibility: The entire interface now supports zooming! Use Ctrl + Mouse Wheel or Ctrl +/- to make everything bigger or smaller, perfect for any screen resolution.
 
-✅ **Key Improvements**
+ **Key Improvements**
+
 - Clearer Stats: The numerical stats table is back and better than ever, with clearer labels for "Today," "This Week," and "This Month" to make your progress easy to understand at a glance.
 - Richer Tooltip: Hovering over the tray icon now gives you a more detailed summary, including your current streak, today's total time, and this week's total time.
 - Production Ready: The code has been polished and reviewed for bugs to ensure a smooth, stable experience.
 
+<<<<<<< HEAD
+
+
+Hope you enjoy the new and improved StudyTracker. Thankyou! 
+=======
 Hope you enjoy the new and improved StudyTracker. Thankyou!
 
 ---
 
 # 🏷️
 Time-tracker, study-timer, productivity-tool, python, focus-timer, cross-platform, hotkey-automation, statistics, streaks, heatmap, minimalist, distraction-free, system-tray-app, gui, study-time-tracker
+<<<<<<< Updated upstream
+=======
+>>>>>>> 227b3c44d5fcbf30a0628cad9b9d45f17084f547
+>>>>>>> Stashed changes
