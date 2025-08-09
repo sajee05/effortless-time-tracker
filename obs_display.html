@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="1">
     <title>Study Tracker OBS</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        @import url('[https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap)');
         body {
             background-color: transparent;
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -29,8 +28,9 @@
             text-align: left;
             min-width: 230px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px); /* Frosted glass effect */
+            backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
         .value {
             font-size: 34px;
@@ -46,24 +46,56 @@
             opacity: 0.85;
         }
         .timer-active .value {
-             color: #A7F3D0; /* A mint green color for active timer */
+             color: #A7F3D0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="stat-block ">
-            <div class="value">00:00:00</div>
+        <div id="session-block" class="stat-block">
+            <div id="session-value" class="value">00:00:00</div>
             <div class="label">Session</div>
         </div>
         <div class="stat-block">
-            <div class="value">00:28:57</div>
+            <div id="today-value" class="value">00:00:00</div>
             <div class="label">Today's Total</div>
         </div>
         <div class="stat-block">
-            <div class="value">7 🔥</div>
+            <div id="streak-value" class="value">0 🔥</div>
             <div class="label">Current Streak</div>
         </div>
     </div>
+    <script>
+        function connect() {
+            const ws = new WebSocket('ws://localhost:8765');
+
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                document.getElementById('session-value').innerText = data.sessionTime;
+                document.getElementById('today-value').innerText = data.todayTime;
+                document.getElementById('streak-value').innerHTML = data.streak; // Use innerHTML for emoji
+
+                const sessionBlock = document.getElementById('session-block');
+                if (data.isTimerRunning) {
+                    sessionBlock.classList.add('timer-active');
+                } else {
+                    sessionBlock.classList.remove('timer-active');
+                }
+            };
+
+            ws.onclose = function(e) {
+                console.log('Socket is closed. Reconnecting in 1 second.', e.reason);
+                setTimeout(function() {
+                    connect();
+                }, 1000);
+            };
+
+            ws.onerror = function(err) {
+                console.error('Socket encountered error: ', err.message, 'Closing socket');
+                ws.close();
+            };
+        }
+        connect();
+    </script>
 </body>
 </html>

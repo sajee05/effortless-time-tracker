@@ -34,6 +34,9 @@ ROOT            = None          # hidden Tk root
 SETTINGS_WINDOW = None          # single settings window instance
 TRAY_ICON       = None          # pystray.Icon instance
 
+# --- NEW: OBS Overlay File ---
+OBS_OUTPUT_FILE = "obs_display.html"
+
 
 # ─────────── Database helpers ───────────────────────────────────────────
 def init_db() -> None:
@@ -89,6 +92,9 @@ def play_sound(name: str) -> None:
 def toggle_timer() -> None:
     global TIMER_RUNNING, START_TIME
     TIMER_RUNNING = not TIMER_RUNNING
+
+    # MODIFIED: Update the tray icon to show the active/inactive state
+    update_tray_icon()
 
     if SETTINGS_WINDOW and SETTINGS_WINDOW.winfo_exists():
         ROOT.after(0, SETTINGS_WINDOW.update_all_views)
@@ -700,9 +706,9 @@ class SettingsWindow(Toplevel):
             messagebox.showinfo("Export", "No data to export.", parent=self)
             return
         fname = filedialog.asksaveasfilename(parent=self, title="Save Export File",
-                                              defaultextension=".json",
-                                              filetypes=[("JSON files", "*.json")],
-                                              initialfile=f"study_logs_{datetime.now():%Y%m%d}.json")
+                                             defaultextension=".json",
+                                             filetypes=[("JSON files", "*.json")],
+                                             initialfile=f"study_logs_{datetime.now():%Y%m%d}.json")
         if not fname: return
         try:
             with open(fname, 'w', encoding='utf-8') as fp:
@@ -782,7 +788,7 @@ class SettingsWindow(Toplevel):
                 elif widget_type == 'Spinbox' or widget_type == 'TCombobox':
                     w.config(font=self.f_body)
                 elif widget_type == 'ScrolledText':
-                     w.config(font=self.f_body)
+                    w.config(font=self.f_body)
             except Exception:
                 pass # Some widgets might not have a font property
             
@@ -797,9 +803,126 @@ class SettingsWindow(Toplevel):
         self.stats_tree.heading("Total", text="Total Time Logged")
         self.stats_tree.heading("Average", text="Historical Daily Average")
 
+# ─────────── NEW: OBS Overlay ──────────────────────────────────────────
+def update_obs_output():
+    """
+    Calculates current stats and writes them to an HTML file for OBS.
+    This function is designed to be called every second and reschedules itself.
+    """
+    # 1. Calculate all necessary values
+    stats = calc_stats()
+    current_session_sec = 0
+    if TIMER_RUNNING and START_TIME:
+        current_session_sec = (datetime.now() - START_TIME).total_seconds()
+
+    today_total_sec = stats.get('today_sec', 0) + current_session_sec
+    streak = stats.get('current_streak', 0)
+
+    # 2. Format the values into strings
+    timer_str = hms(current_session_sec)
+    today_total_str = hms(today_total_sec)
+    streak_str = str(streak)
+
+    # 3. Create the HTML content with a minimal, readable, Apple-inspired design
+    # MODIFIED: Replaced meta refresh with a more reliable JavaScript reload.
+    html_content = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Tracker OBS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {{
+            background-color: transparent;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            text-shadow: 0 0 8px rgba(0,0,0,0.7);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }}
+        .container {{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }}
+        .stat-block {{
+            background-color: rgba(20, 20, 20, 0.45);
+            border-radius: 14px;
+            padding: 8px 18px;
+            text-align: left;
+            min-width: 230px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            -webkit-backdrop-filter: blur(10px);
+        }}
+        .value {{
+            font-size: 34px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }}
+        .label {{
+            font-size: 14px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.85;
+        }}
+        .timer-active .value {{
+             color: #A7F3D0; /* A mint green color for active timer */
+        }}
+    </style>
+    <script>
+        // Use JavaScript to reload the page every second.
+        // This is often more reliable in OBS than a meta refresh tag.
+        // The 'true' parameter forces a hard reload, bypassing the cache.
+        setTimeout(() => {{
+            location.reload(true);
+        }}, 1000);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="stat-block {'timer-active' if TIMER_RUNNING else ''}">
+            <div class="value">{timer_str}</div>
+            <div class="label">Session</div>
+        </div>
+        <div class="stat-block">
+            <div class="value">{today_total_str}</div>
+            <div class="label">Today's Total</div>
+        </div>
+        <div class="stat-block">
+            <div class="value">{streak_str} 🔥</div>
+            <div class="label">Current Streak</div>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+    # 4. Write to the file
+    try:
+        with open(OBS_OUTPUT_FILE, 'w', encoding='utf-8') as f:
+            f.write(html_content.strip())
+    except Exception as e:
+        print(f"[OBS Output Error] Could not write to {OBS_OUTPUT_FILE}: {e}")
+
+    # 5. Schedule the next update
+    if ROOT and ROOT.winfo_exists():
+        ROOT.after(1000, update_obs_output)
 
 # ─────────── Tray icon setup ────────────────────────────────────────────
-def make_icon():
+def update_tray_icon():
+    """Updates the system tray icon based on the timer's running state."""
+    if TRAY_ICON:
+        TRAY_ICON.icon = make_icon(is_active=TIMER_RUNNING)
+
+def make_icon(is_active: bool = False):
+    """Creates the tray icon image, with an optional red dot if active."""
     image = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
     try:
@@ -809,7 +932,13 @@ def make_icon():
             font_obj = ImageFont.truetype("Symbola.ttf", 50)
         except IOError:
             font_obj = ImageFont.load_default()
+    # Draw the book emoji
     draw.text((5, 0), "📖", font=font_obj, fill="white")
+    
+    # If active, draw a red dot indicator
+    if is_active:
+        draw.ellipse((48, 5, 60, 17), fill='red', outline='white')
+        
     return image
 
 def _show_settings(_icon=None, _item=None):
@@ -850,7 +979,8 @@ def setup_tray():
     ROOT.withdraw()
 
     try:
-        icon_image = make_icon()
+        # MODIFIED: Create icon based on initial timer state
+        icon_image = make_icon(is_active=TIMER_RUNNING)
     except Exception as e:
         print(f"Could not create emoji icon: {e}. Using fallback.")
         icon_image = Image.new("RGB", (64, 64), "black")
@@ -875,6 +1005,8 @@ def setup_tray():
 
     threading.Thread(target=icon.run, daemon=True).start()
     ROOT.after(1000, _update_tooltip)
+    # --- MODIFIED: Start the OBS output update loop ---
+    ROOT.after(100, update_obs_output) 
     ROOT.mainloop()
 
 # ─────────── Main ───────────────────────────────────────────────────────
@@ -900,4 +1032,17 @@ if __name__ == "__main__":
         print(f"Could not create audio files (gTTS/pydub needed): {e}")
 
     print(f"{APP_NAME} running. Press Alt+Shift+1 to toggle timer.")
+    
+    # --- NEW: Instructions for OBS Integration ---
+    obs_file_path = os.path.abspath(OBS_OUTPUT_FILE)
+    print("\n" + "="*50)
+    print("🔴 OBS INTEGRATION IS ACTIVE")
+    print(f"  1. Open OBS Studio.")
+    print(f"  2. Add a new 'Browser' source to your scene.")
+    print(f"  3. Check the 'Local file' box.")
+    print(f"  4. Click 'Browse' and select this file:")
+    print(f"     {obs_file_path}")
+    print(f"  5. Set Width and Height as needed (e.g., 300x300).")
+    print("="*50 + "\n")
+    
     setup_tray()
