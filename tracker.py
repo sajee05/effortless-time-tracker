@@ -74,6 +74,13 @@ def init_db() -> None:
                 con.execute("DROP TABLE IF EXISTS rewards_backup")
             except sqlite3.OperationalError:
                 pass
+        # Coin transactions for rewards
+        con.execute('''CREATE TABLE IF NOT EXISTS coin_transactions(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT NOT NULL,
+            amount INTEGER NOT NULL,
+            reason TEXT
+        )''')
 
 def add_log(start: datetime, end: datetime, seconds: int) -> None:
     with sqlite3.connect(DB_FILE) as con:
@@ -124,6 +131,16 @@ def record_reward_claim(box_id: int) -> None:
             "UPDATE rewards SET claim_count = claim_count + 1, last_claimed = ? WHERE box_id = ?",
             (datetime.now().isoformat(), box_id)
         )
+
+def add_coin_transaction(amount: int, reason: str) -> None:
+   with sqlite3.connect(DB_FILE) as con:
+       con.execute("INSERT INTO coin_transactions(timestamp, amount, reason) VALUES(?,?,?)",
+                   (datetime.now().isoformat(), amount, reason))
+
+def get_total_coins_spent() -> int:
+   with sqlite3.connect(DB_FILE) as con:
+       result = con.execute("SELECT SUM(amount) FROM coin_transactions WHERE amount < 0").fetchone()
+       return abs(result[0]) if result[0] is not None else 0
 
 # ─────────── Utility ────────────────────────────────────────────────────
 def hms(sec: int | float) -> str:
@@ -532,15 +549,15 @@ class SettingsWindow(Toplevel):
         for c in range(2): grid.columnconfigure(c, weight=1)
 
         self.reward_boxes = {}  # box_id -> widgets dict
-        reqs = {
+        self.reqs = {
             1: {"coins": 50, "streak": 0, "label": "Tier 1"},
             2: {"coins": 100, "streak": 0, "label": "Tier 2"},
             3: {"coins": 200, "streak": 0, "label": "Tier 3"},
-            4: {"coins": 0, "streak": 14, "label": "14-Day Streak"}
+            4: {"coins": 0, "streak": 14, "label": "Streak Reward"}
         }
 
         def build_box(parent, box_id, row, col):
-            box = ttk.LabelFrame(parent, text=f"{reqs[box_id]['label']}", style="Box.TLabelframe")
+            box = ttk.LabelFrame(parent, text=f"{self.reqs[box_id]['label']}", style="Box.TLabelframe")
             box.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
             parent.grid_rowconfigure(row, weight=1)
             parent.grid_columnconfigure(col, weight=1)
@@ -550,10 +567,10 @@ class SettingsWindow(Toplevel):
 
             # Requirement line
             req_text = ""
-            if reqs[box_id]['coins'] > 0:
-                req_text = f"Requires: {reqs[box_id]['coins']} 🪙"
+            if self.reqs[box_id]['coins'] > 0:
+                req_text = f"Requires: {self.reqs[box_id]['coins']} 🪙"
             else:
-                req_text = f"Requires: {reqs[box_id]['streak']} 🔥 streak"
+                req_text = f"Requires: {self.reqs[box_id]['streak']} 🔥 streak"
             lbl_req = Label(inner, text=req_text, font=self.f_small, bg=self.CONTENT_BG, fg="#AEB4BA")
             lbl_req.pack(anchor='w')
 
@@ -594,7 +611,8 @@ class SettingsWindow(Toplevel):
                 "progress_lbl": prog_lbl,
                 "claim_btn": claim_btn,
                 "lock_lbl": lock_lbl,
-                "last_lbl": last_lbl
+                "last_lbl": last_lbl,
+                "req_lbl": lbl_req
             }
 
         build_box(grid, 1, 0, 0)
@@ -618,6 +636,12 @@ class SettingsWindow(Toplevel):
             messagebox.showinfo("Saved", "Reward updated.", parent=self)
 
     def _claim_reward(self, box_id: int):
+        # Deduct coins if it's a coin-based reward
+        cost = self.reqs[box_id]["coins"]
+        if cost > 0:
+           # Deduct coins by recording a transaction, without altering study logs.
+           add_coin_transaction(-cost, f"Claimed reward {box_id}")
+
         record_reward_claim(box_id)
         messagebox.showinfo("Claimed", "Reward marked as claimed! 🎉", parent=self)
         self.update_rewards_page()
@@ -822,20 +846,15 @@ class SettingsWindow(Toplevel):
         stats = calc_stats()
         current_session_sec = (datetime.now() - START_TIME).total_seconds() if TIMER_RUNNING and START_TIME else 0
         total_sec_with_session = stats.get('total_sec', 0) + int(current_session_sec)
-        coins = total_sec_with_session // 3600
+        total_earned_coins = total_sec_with_session // 3600
+        total_spent_coins = get_total_coins_spent()
+        coins = total_earned_coins - total_spent_coins
         streak = stats.get('current_streak', 0)
 
         self.lbl_coin_info.config(text=f"🪙 Coins: {coins}")
         self.lbl_streak_info.config(text=f"🔥 Streak: {streak}")
 
         rewards = get_rewards()
-        reqs = {
-            1: {"coins": 50, "streak": 0},
-            2: {"coins": 100, "streak": 0},
-            3: {"coins": 200, "streak": 0},
-            4: {"coins": 0, "streak": 14}
-        }
-
         for box_id, widgets in self.reward_boxes.items():
             rdata = rewards.get(box_id, {'text': '', 'claim_count': 0, 'last_claimed': None})
             ent: ttk.Entry = widgets["entry"]
@@ -848,8 +867,17 @@ class SettingsWindow(Toplevel):
                 ent.state(['readonly'])
 
             # lock logic
-            need_coins = reqs[box_id]["coins"]
-            need_streak = reqs[box_id]["streak"]
+            need_coins = self.reqs[box_id]["coins"]
+            need_streak = self.reqs[box_id]["streak"]
+
+            if box_id == 4:
+                claim_count = rdata.get('claim_count', 0)
+                need_streak = (claim_count + 1) * 14
+                # Update requirement text and box title dynamically
+                if "req_lbl" in widgets:
+                    widgets["req_lbl"].config(text=f"Requires: {need_streak} 🔥 streak")
+                widgets["frame"].config(text=f"{need_streak}-Day Streak")
+
             unlocked = (coins >= need_coins) and (streak >= need_streak)
 
             # progress values and text
