@@ -1,5 +1,8 @@
 # StudyTracker
 
+## DEVELOPMENT CLOSED. 🔒
+I switched to TickTick, which already has this shortcut feature and the overall app is much more optimised. Thank you.
+
 <img width="1365" height="753" alt="image" src="https://github.com/user-attachments/assets/e427dd63-6f32-4030-a9f9-315b4092c1dd" />
 
 (Swipe down for more screenshots) A minimalist study timer that stays out of your way while tracking everything that matters. 
