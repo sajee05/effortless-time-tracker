@@ -1,7 +1,8 @@
-# StudyTracker
-
 ## DEVELOPMENT CLOSED. 🔒
-I switched to TickTick, which already has this shortcut feature and the overall app is much more optimised. Thank you.
+I switched to TickTick, which already has this shortcut feature and the overall app is much more optimized. Thank you.
+But this tool can still be useful for someone looking for the below-mentioned features.
+
+# StudyTracker
 
 <img width="1365" height="753" alt="image" src="https://github.com/user-attachments/assets/e427dd63-6f32-4030-a9f9-315b4092c1dd" />
 
